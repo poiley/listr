@@ -1,28 +1,53 @@
 import json
 import urllib
 
-user = raw_input() # Get the user that repo list is wanted from
+class repoLister:
+        user = ""
+        githubRepoData = ""
+        githubUserData = ""
+        repoIndex = 0
+        repositories = 0
 
-print "Downloading user info for user '"+user+"'"
-urllib.urlretrieve("https://api.github.com/users/"+user, "userdata.json") # download a json file of their userinformation
+        def downloadJSON(self,index):
+            if index == 0:
+                print "\nDownloading user info for user '"+self.user+"'"
+                urllib.urlretrieve("https://api.github.com/users/"+self.user, "userdata.json") # download a json file of their userinformation
+                print "User info downloaded."
+            elif index == 1:
+                print "\nDownloading user repo list for user '"+self.user+"'"
+                urllib.urlretrieve("https://api.github.com/users/"+self.user+"/repos?page=1&per_page=10000", "repos.json") # download a json file of their repos
+                print "Repo info downloaded."
+            else:
+                self.downloadJSON(0)
+                self.downloadJSON(1)
 
-print "User info downloaded.\nDownloading user repo list for user '"+user+"'"
-urllib.urlretrieve("https://api.github.com/users/"+user+"/repos?page=1&per_page=10000", "repos.json") # download a json file of their repos
+        def readJSON(self,index):
+            if index == 0:
+                with open('repos.json') as data_file:
+                    self.githubRepoData = json.load(data_file)
+            elif index == 1:
+                with open('userdata.json') as data_file:
+                    self.githubUserData = json.load(data_file)
+            else:
+                self.readJSON(0)
+                self.readJSON(1)
 
-with open('repos.json') as data_file:
-    githubRepoData = json.load(data_file)
-with open('userdata.json') as data_file:
-    githubUserData = json.load(data_file)
+
+repository = repoLister()
+print "user: ",
+repository.user = raw_input() # Get the user that repo list is wanted from
+
+repository.downloadJSON(2)
+repository.readJSON(2)
 
 try:
-    repoAmount = int(githubUserData["public_repos"])-1
+    repository.repositories = int(repository.githubUserData["public_repos"]-1)
 except ValueError:
     print("Error: could not get public repos index as integer")
-index = 0
 
 print "\nRepositories:"
 
-for _ in range(repoAmount+1):
-    print index+1,"\t",githubRepoData[index]["name"]
-    repoAmount -= 1
-    index += 1
+for _ in range(repository.repositories+1):
+    print repository.repoIndex+1,"\t",repository.githubRepoData[repository.repoIndex]["name"]
+    repository.repositories -= 1
+    repository.repoIndex += 1
