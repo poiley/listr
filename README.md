@@ -1,5 +1,5 @@
-# repoLister
-Python script that gets the repositories of a user on Github.
+# listr
+Get the repositories of any user on Github.
 
 ## ToDo:
  - Pagination :white_check_mark:
