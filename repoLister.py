@@ -1,5 +1,4 @@
-import json
-import urllib
+import json, urllib, sys
 
 class repoLister:
         user = ""
@@ -32,10 +31,13 @@ class repoLister:
                 self.readJSON(0)
                 self.readJSON(1)
 
-
 repository = repoLister()
-print "user: ",
-repository.user = raw_input() # Get the user that repo list is wanted from
+if len(sys.argv) == 2:
+    repository.user = sys.argv[1]
+elif len(sys.args < 2):
+    sys.exit("Error: No Args")
+else:
+    sys.exit("Error: Too many Args")
 
 repository.downloadJSON(2)
 repository.readJSON(2)
